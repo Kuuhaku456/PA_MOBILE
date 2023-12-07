@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MyAnimeCards extends StatefulWidget {
-  final String ? title;
-  final Function() ? onTap;
-  final double ? rating;
-  final String ? imagePath;
-  const MyAnimeCards(
-    {
-      super.key,
-      required this.onTap,
-      required this.rating,
-      required this.title,
-      required this.imagePath,
-    }
-  );
+  final String? title;
+  final Function()? onTap;
+  final double? rating;
+  final String? imagePath;
+  const MyAnimeCards({
+    super.key,
+    required this.onTap,
+    required this.rating,
+    required this.title,
+    required this.imagePath,
+  });
 
   @override
   State<MyAnimeCards> createState() => _MyAnimeCardsState();
@@ -42,7 +40,7 @@ class _MyAnimeCardsState extends State<MyAnimeCards> {
                     offset: Offset(2, 2)),
               ],
               image: DecorationImage(
-                image: AssetImage('${widget.imagePath}'),
+                image: NetworkImage('${widget.imagePath}'),
                 filterQuality: FilterQuality.low,
                 fit: BoxFit.cover,
               ),

@@ -64,24 +64,29 @@ class _MyEditProfileState extends State<MyEditProfile> {
   }
 
   Future<String> _uploadImage() async {
-    Reference storageReference = FirebaseStorage.instance
-        .ref()
-        .child('profile_images/${DateTime.now()}.png');
-    UploadTask uploadTask = storageReference.putFile(_profileImage!);
-    await uploadTask.whenComplete(() => null);
-    return await storageReference.getDownloadURL();
+    try {
+      Reference storageReference = FirebaseStorage.instance.ref().child(
+          'profile_images/${FirebaseAuth.instance.currentUser?.email ?? DateTime.now()}.png');
+      UploadTask uploadTask = storageReference.putFile(_profileImage!);
+      await uploadTask.whenComplete(() => null);
+      print(await storageReference.getDownloadURL());
+      return await storageReference.getDownloadURL();
+    } catch (e) {
+      print(e);
+      return '';
+    }
   }
 
   void showAlertSuccess(String message) {
     QuickAlert.show(
-      context: context,
-      type: QuickAlertType.success,
-      text: message,
-      onConfirmBtnTap: () => Navigator.of(context)
-          .pushReplacement(CupertinoPageRoute(builder: (BuildContext context) {
-        return const Screen();
-      })),
-    );
+        context: context,
+        type: QuickAlertType.success,
+        text: message,
+        onConfirmBtnTap: () {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => Screen()),
+              (Route<dynamic> route) => false);
+        });
   }
 
   void clearInputs() {
@@ -181,7 +186,7 @@ class _MyEditProfileState extends State<MyEditProfile> {
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 5),
                     child: MyButton(
-                        onTap: () {
+                        onTap: () async {
                           if (usernameController.text == "" ||
                               usiaController.text == "" ||
                               noTelpController.text == "") {
@@ -191,6 +196,7 @@ class _MyEditProfileState extends State<MyEditProfile> {
                               .hasMatch(emailController.text)) {
                             showAlert('Format Email Salah');
                           } else {
+                            String ok = await _uploadImage();
                             var user = FirebaseAuth.instance.currentUser;
                             final docRef = FirebaseFirestore.instance
                                 .collection("users")
@@ -199,14 +205,14 @@ class _MyEditProfileState extends State<MyEditProfile> {
                               "username": usernameController.text,
                               "usia": usiaController.text,
                               "phonenumber": noTelpController.text,
-                              "image":  _profileImage != null ? _uploadImage() : "",
+                              "image": ok
                             };
                             docRef.update(updates).then(
                                 (value) => showAlertSuccess(
                                     'Profile Updated Succesfully!'),
                                 onError: (e) =>
                                     print("Error updating document $e"));
-                            showAlertSuccess('Profile Berhasil diupdate');
+                            // showAlertSuccess('Profile Berhasil diupdate');
                             clearInputs();
                           }
                         },
