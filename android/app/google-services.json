@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "113843920620",
+    "firebase_url": "https://aexinl-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "aexinl",
+    "storage_bucket": "aexinl.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113843920620:android:4bee8a7817995aeac94fc9",
+        "android_client_info": {
+          "package_name": "com.example.posttest5_096_filipus_manik"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "113843920620-t2m1k2i65dltj7225u12q96c9lik9u3f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUHx9R2qLWi_h9B4zzL9dKay0pl5yvv4I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "113843920620-t2m1k2i65dltj7225u12q96c9lik9u3f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "113843920620-6rdfsipbgp55hdgp29ovbn89v0d0nbeb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.posttest5096FilipusManik"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113843920620:android:76354399923eaeeac94fc9",
+        "android_client_info": {
+          "package_name": "com.example.praktikum_state_mngmnt_2023"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "113843920620-t2m1k2i65dltj7225u12q96c9lik9u3f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUHx9R2qLWi_h9B4zzL9dKay0pl5yvv4I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "113843920620-t2m1k2i65dltj7225u12q96c9lik9u3f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "113843920620-6rdfsipbgp55hdgp29ovbn89v0d0nbeb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.posttest5096FilipusManik"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
