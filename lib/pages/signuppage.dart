@@ -254,21 +254,8 @@ class _MySignUpPageState extends State<MySignUpPage> {
                         await addProfile(
                             usernameController.text, emailController.text);
                         if (strung == 'Berhasil Sign Up') {
-                          showAlertSuccess('berhasil Sign in');
+                          showAlertSuccess('berhasil Sign Up');
                           clearInputs();
-                          // ignore: use_build_context_synchronously
-                          // showSnackbar(
-                          //     context,
-                          //     'Berhasil!',
-                          //     'Selamat Anda berhasil SignUp, Silahkan login terlebih dahulu!',
-                          //     'Succes',
-                          //     DefaultColors.successGreen);
-                          // // ignore: use_build_context_synchronously
-                          // Navigator.pushReplacement(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) => const MySigninPage()),
-                          // );
                         } else {
                           showAlert(strung);
                         }

@@ -179,7 +179,7 @@ Anime Here!''',
                             clearInputs();
                             // ignore: use_build_context_synchronously
                           } else {
-                            showAlert(strung);
+                            showAlert('Email atau password salah!!!');
                           }
                         }
                       },

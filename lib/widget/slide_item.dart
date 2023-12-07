@@ -31,7 +31,7 @@ class _MySlideItemState extends State<MySlideItem> {
           color: Colors.green,
           borderRadius: BorderRadius.circular(10),
           image: DecorationImage(
-            image: AssetImage(widget.imagePath.toString()),
+            image: NetworkImage(widget.imagePath.toString()),
             filterQuality: FilterQuality.low,
             fit: BoxFit.cover,
           ),
@@ -42,7 +42,7 @@ class _MySlideItemState extends State<MySlideItem> {
               top: 135,
               child: Container(
                 width: MediaQuery.of(context).size.width / 1.35,
-                height: 40,
+                height: 50,
                 margin: const EdgeInsets.only(
                   left: 10,
                   right: 10,
@@ -53,35 +53,38 @@ class _MySlideItemState extends State<MySlideItem> {
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0.5),
-                      child: AutoSizeText(
-                        widget.title.toString(),
-                        style: GoogleFonts.poppins(
-                            fontSize: MediaQuery.of(context).size.width / 25,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.yellow),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 2,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0.5),
+                        child: AutoSizeText(
+                          widget.title.toString(),
+                          style: GoogleFonts.poppins(
+                              fontSize: MediaQuery.of(context).size.width / 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.yellow),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
-                    Container(width: MediaQuery.of(context).size.width / 50),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width / 7,
+                      width: MediaQuery.of(context).size.width / 5,
                       height: 50,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Icon(
                             Icons.star,
-                            size: MediaQuery.of(context).size.width / 25,
+                            size: MediaQuery.of(context).size.width / 20,
                             color: Colors.yellow,
                           ),
                           Text(
                             widget.rating.toString(),
                             style: GoogleFonts.poppins(
                                 fontSize:
-                                    MediaQuery.of(context).size.width / 25,
+                                    MediaQuery.of(context).size.width / 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.yellow),
                           ),

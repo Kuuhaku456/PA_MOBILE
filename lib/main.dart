@@ -29,7 +29,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) {
           AnimeFavoriteNotifier();
         }),
-        ChangeNotifierProvider(create: (_) => ThemeModeData()),
+        ChangeNotifierProvider(create: (_) => ThemeModeData()
+        ),
       ],
       child: const MyApp(),
     ),
@@ -64,22 +65,22 @@ class MyApp extends StatelessWidget {
             bodySmall: TextStyle(color: Colors.black45),
           ),
         ),
-        darkTheme:ThemeData(
-              useMaterial3: true,
-              brightness: Brightness.dark,
-              colorScheme: darkScheme,
-              textTheme: const TextTheme(
-                headlineLarge: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.w600,
-                    fontStyle: FontStyle.italic,
-                    fontFamily: 'Serif'),
-                bodyLarge: TextStyle(color: Colors.white70),
-                bodyMedium: TextStyle(color: Colors.white60),
-                bodySmall: TextStyle(color: Colors.white54),
-              ),
-            ),
-            themeMode: Provider.of<ThemeModeData>(context).themeMode,
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          brightness: Brightness.dark,
+          colorScheme: darkScheme,
+          textTheme: const TextTheme(
+            headlineLarge: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.w600,
+                fontStyle: FontStyle.italic,
+                fontFamily: 'Serif'),
+            bodyLarge: TextStyle(color: Colors.white70),
+            bodyMedium: TextStyle(color: Colors.white60),
+            bodySmall: TextStyle(color: Colors.white54),
+          ),
+        ),
+        themeMode: Provider.of<ThemeModeData>(context).themeMode,
         home: const Screen(),
       );
     });
