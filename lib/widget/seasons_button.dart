@@ -19,9 +19,8 @@ class _MySeasonsButtonState extends State<MySeasonsButton> {
     return InkWell(
       onTap: widget.onTap,
       child: Container(
-          width: 70,
-          height: 70,
-          margin: const EdgeInsets.only(right: 30),
+          width: MediaQuery.of(context).size.width / 8,
+          height: MediaQuery.of(context).size.height / 16,
           decoration: const BoxDecoration(
             color: Colors.yellow,
             borderRadius: BorderRadius.only(

@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:posttest5_096_filipus_manik/pages/Screen.dart';
 import 'package:posttest5_096_filipus_manik/pages/edit_profile.dart';
+import 'package:posttest5_096_filipus_manik/pages/settings.dart';
 import 'package:posttest5_096_filipus_manik/pages/signinpage.dart';
 import 'package:posttest5_096_filipus_manik/widget/Button.dart';
 import 'package:posttest5_096_filipus_manik/widget/button_bulat.dart';
@@ -13,28 +15,21 @@ String username = '-';
 String usia = '-';
 String no_telp = '-';
 String? email = '-';
+String profil = 'https://avatars.githubusercontent.com/Kuuhaku456';
+
+void jalan() async {}
+
 Stream<QuerySnapshot> whoAmI() {
   return FirebaseFirestore.instance.collection('users').snapshots();
 }
 
 class MyProfile extends StatefulWidget {
   const MyProfile({super.key});
+
   @override
   // ignore: no_logic_in_create_state
   State<MyProfile> createState() {
-    var user = FirebaseAuth.instance.currentUser;
-
-    final userRef = FirebaseFirestore.instance.collection('users');
-    userRef.get().then((snapshot) {
-      for (var doc in snapshot.docs) {
-        if (doc.data()['email'] == user?.email) {
-          username = doc.data()['username'];
-          usia = doc.data()['usia'];
-          no_telp = doc.data()['phonenumber'];
-          email = doc.data()['email'];
-        }
-      }
-    });
+    // }
 
     return _MyProfileState();
   }
@@ -47,7 +42,9 @@ class _MyProfileState extends State<MyProfile> {
     var tinggi = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF374259),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF374259)
+          : Colors.white,
       body: ListView(
         children: [
           Stack(
@@ -59,38 +56,97 @@ class _MyProfileState extends State<MyProfile> {
               Container(
                 width: lebar,
                 height: tinggi / 2.5,
-                decoration: const BoxDecoration(
-                  color: Colors.yellow,
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.yellow
+                      : const Color(0xFF374259),
+                  borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(350),
                       bottomRight: Radius.circular(350)),
                 ),
               ),
-              Positioned(
-                top: MediaQuery.of(context).size.height / 15,
-                left: MediaQuery.of(context).size.width / 3.2,
-                child: Container(
-                  width: lebar / 2.5,
-                  height: tinggi / 2.5,
-                  decoration: const BoxDecoration(
-                      color: Colors.orange,
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: AssetImage('assets/logo-wallpaper.jpeg'),
-                        fit: BoxFit.cover,
-                      )),
-                ),
-              ),
+              StreamBuilder(
+                  stream: whoAmI(),
+                  builder: (context, snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        return Positioned(
+                          top: MediaQuery.of(context).size.height / 15,
+                          left: MediaQuery.of(context).size.width / 3.2,
+                          child: Container(
+                            width: lebar / 2.5,
+                            height: tinggi / 2.5,
+                            decoration: BoxDecoration(
+                                color: Colors.orange,
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image: NetworkImage(profil),
+                                  fit: BoxFit.cover,
+                                )),
+                          ),
+                        );
+                      default:
+                        // var user = FirebaseAuth.instance.currentUser;
+
+                        // if (user != null) {
+                        // final userRef =
+                        // FirebaseFirestore.instance.collection('users');
+                        // userRef.get().then((snapshot) {
+                        for (var doc in snapshot.data!.docs) {
+                          if (doc['email'] ==
+                              FirebaseAuth.instance.currentUser?.email) {
+                            username = doc['username'];
+                            usia = doc['usia'];
+                            no_telp = doc['phonenumber'];
+                            email = doc['email'];
+                            if (doc['image'] != '') profil = doc['image'];
+                          }
+                        }
+                    }
+
+                    if (snapshot.hasError) {
+                      return Positioned(
+                        top: MediaQuery.of(context).size.height / 15,
+                        left: MediaQuery.of(context).size.width / 3.2,
+                        child: Container(
+                          width: lebar / 2.5,
+                          height: tinggi / 2.5,
+                          decoration: BoxDecoration(
+                              color: Colors.orange,
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: NetworkImage(profil),
+                                fit: BoxFit.cover,
+                              )),
+                        ),
+                      );
+                    } else {
+                      return Positioned(
+                        top: MediaQuery.of(context).size.height / 15,
+                        left: MediaQuery.of(context).size.width / 3.2,
+                        child: Container(
+                          width: lebar / 2.5,
+                          height: tinggi / 2.5,
+                          decoration: BoxDecoration(
+                              color: Colors.orange,
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: NetworkImage(profil),
+                                fit: BoxFit.cover,
+                              )),
+                        ),
+                      );
+                    }
+                  }),
               Positioned(
                 top: 20,
                 right: 20,
                 child: MyCircleButton(
-                  icon: Icons.favorite,
-                  onPressed: () {
-                    print(username);
-                    print(email);
-                    print(usia);
-                  },
+                  icon: Icons.settings,
+                  onPressed: () => Navigator.of(context)
+                      .push(CupertinoPageRoute(builder: (BuildContext context) {
+                    return const MySettingsPage();
+                  })),
                 ),
               ),
             ],
@@ -101,7 +157,9 @@ class _MyProfileState extends State<MyProfile> {
               style: GoogleFonts.poppins(
                 fontSize: MediaQuery.of(context).size.width / 20,
                 fontWeight: FontWeight.w600,
-                color: Colors.yellow[600],
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.yellow
+                    : Colors.black,
               ),
               maxLines: 5,
               textAlign: TextAlign.center,
@@ -115,7 +173,9 @@ class _MyProfileState extends State<MyProfile> {
                 const EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 10),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: const Color(0xFF374259),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF374259)
+                    : Colors.white,
                 boxShadow: const [
                   BoxShadow(
                       blurRadius: 8, offset: Offset(0, 4), spreadRadius: 1.0)
@@ -126,18 +186,66 @@ class _MyProfileState extends State<MyProfile> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      margin: const EdgeInsets.only(left: 10, top: 20),
-                      decoration: const BoxDecoration(
-                          color: Colors.black,
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: AssetImage('assets/logo-wallpaper.jpeg'),
-                            fit: BoxFit.cover,
-                          )),
-                    ),
+                    StreamBuilder(
+                        stream: whoAmI(),
+                        builder: (context, snapshot) {
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.waiting:
+                              return Container(
+                                width: 50,
+                                height: 50,
+                                margin:
+                                    const EdgeInsets.only(left: 10, top: 20),
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      image: NetworkImage(profil),
+                                      fit: BoxFit.cover,
+                                    )),
+                              );
+                            default:
+                              for (var doc in snapshot.data!.docs) {
+                                if (doc['email'] ==
+                                    FirebaseAuth.instance.currentUser?.email) {
+                                  username = doc['username'];
+                                  usia = doc['usia'];
+                                  no_telp = doc['phonenumber'];
+                                  email = doc['email'];
+                                  if (doc['image'] != '') profil = doc['image'];
+                                }
+                              }
+                              if (snapshot.hasError) {
+                                return Container(
+                                  width: 50,
+                                  height: 50,
+                                  margin:
+                                      const EdgeInsets.only(left: 10, top: 20),
+                                  decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        image: NetworkImage(profil),
+                                        fit: BoxFit.cover,
+                                      )),
+                                );
+                              } else {
+                                return Container(
+                                  width: 50,
+                                  height: 50,
+                                  margin:
+                                      const EdgeInsets.only(left: 10, top: 20),
+                                  decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        image: NetworkImage(profil),
+                                        fit: BoxFit.cover,
+                                      )),
+                                );
+                              }
+                          }
+                        }),
                     const SizedBox(width: 20),
                     Container(
                       margin: const EdgeInsets.only(top: 15),
@@ -146,7 +254,10 @@ class _MyProfileState extends State<MyProfile> {
                         style: GoogleFonts.poppins(
                             fontSize: 30,
                             fontWeight: FontWeight.w600,
-                            color: Colors.yellow),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.yellow
+                                    : Colors.black),
                       ),
                     ),
                   ],
@@ -154,8 +265,10 @@ class _MyProfileState extends State<MyProfile> {
                 const SizedBox(
                   height: 10,
                 ),
-                const Divider(
-                  color: Colors.yellow, //color of divider
+                Divider(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.yellow
+                      : Colors.black, //color of divider
                   height: 5, //height spacing of divider
                   thickness: 3, //thickness of divier line
                   indent: 10, //spacing at the start of divider
@@ -170,7 +283,9 @@ class _MyProfileState extends State<MyProfile> {
                       style: GoogleFonts.poppins(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
-                          color: Colors.yellow),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.yellow
+                              : Colors.black),
                     ),
                     Container(width: MediaQuery.of(context).size.width / 4),
                     StreamBuilder(
@@ -183,24 +298,24 @@ class _MyProfileState extends State<MyProfile> {
                                 style: GoogleFonts.poppins(
                                   fontSize:
                                       MediaQuery.of(context).size.width / 20,
-                                  color: Colors.yellow,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.yellow
+                                      : Colors.black,
                                   fontWeight: FontWeight.bold,
                                 ),
                               );
                             default:
-                              var user = FirebaseAuth.instance.currentUser;
-                              final userRef = FirebaseFirestore.instance
-                                  .collection('users');
-                              userRef.get().then((snapshot) {
-                                for (var doc in snapshot.docs) {
-                                  if (doc.data()['email'] == user?.email) {
-                                    username = doc.data()['username'];
-                                    usia = doc.data()['usia'];
-                                    no_telp = doc.data()['phonenumber'];
-                                    email = doc.data()['email'];
-                                  }
+                              for (var doc in snapshot.data!.docs) {
+                                if (doc['email'] ==
+                                    FirebaseAuth.instance.currentUser?.email) {
+                                  username = doc['username'];
+                                  usia = doc['usia'];
+                                  no_telp = doc['phonenumber'];
+                                  email = doc['email'];
+                                  if (doc['image'] != '') profil = doc['image'];
                                 }
-                              });
+                              }
                               if (snapshot.hasError) {
                                 return AutoSizeText(
                                   'Error saat membaca data...',
@@ -209,7 +324,10 @@ class _MyProfileState extends State<MyProfile> {
                                           MediaQuery.of(context).size.width /
                                               20,
                                       fontWeight: FontWeight.w500,
-                                      color: Colors.yellow),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.yellow
+                                          : Colors.black),
                                 );
                               } else {
                                 return AutoSizeText(
@@ -219,7 +337,10 @@ class _MyProfileState extends State<MyProfile> {
                                           MediaQuery.of(context).size.width /
                                               20,
                                       fontWeight: FontWeight.w500,
-                                      color: Colors.yellow),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.yellow
+                                          : Colors.black),
                                 );
                               }
                           }
@@ -235,7 +356,9 @@ class _MyProfileState extends State<MyProfile> {
                       style: GoogleFonts.poppins(
                           fontSize: MediaQuery.of(context).size.width / 20,
                           fontWeight: FontWeight.w500,
-                          color: Colors.yellow),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.yellow
+                              : Colors.black),
                     ),
                     Container(width: MediaQuery.of(context).size.width / 1.5),
                     StreamBuilder(
@@ -248,24 +371,37 @@ class _MyProfileState extends State<MyProfile> {
                                 style: GoogleFonts.poppins(
                                   fontSize:
                                       MediaQuery.of(context).size.width / 20,
-                                  color: Colors.yellow,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.yellow
+                                      : Colors.black,
                                   fontWeight: FontWeight.bold,
                                 ),
                               );
                             default:
-                              var user = FirebaseAuth.instance.currentUser;
-                              final userRef = FirebaseFirestore.instance
-                                  .collection('users');
-                              userRef.get().then((snapshot) {
-                                for (var doc in snapshot.docs) {
-                                  if (doc.data()['email'] == user?.email) {
-                                    username = doc.data()['username'];
-                                    usia = doc.data()['usia'];
-                                    no_telp = doc.data()['phonenumber'];
-                                    email = doc.data()['email'];
-                                  }
+                              for (var doc in snapshot.data!.docs) {
+                                if (doc['email'] ==
+                                    FirebaseAuth.instance.currentUser?.email) {
+                                  username = doc['username'];
+                                  usia = doc['usia'];
+                                  no_telp = doc['phonenumber'];
+                                  email = doc['email'];
+                                  if (doc['image'] != '') profil = doc['image'];
                                 }
-                              });
+                              }
+                              // var user = FirebaseAuth.instance.currentUser;
+                              // final userRef = FirebaseFirestore.instance
+                              //     .collection('users');
+                              // userRef.get().then((snapshot) {
+                              //   for (var doc in snapshot.docs) {
+                              //     if (doc.data()['email'] == user?.email) {
+                              //       username = doc.data()['username'];
+                              //       usia = doc.data()['usia'];
+                              //       no_telp = doc.data()['phonenumber'];
+                              //       email = doc.data()['email'];
+                              //     }
+                              //   }
+                              // });
                               if (snapshot.hasError) {
                                 return AutoSizeText(
                                   'Error saat membaca data...',
@@ -274,7 +410,10 @@ class _MyProfileState extends State<MyProfile> {
                                           MediaQuery.of(context).size.width /
                                               20,
                                       fontWeight: FontWeight.w500,
-                                      color: Colors.yellow),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.yellow
+                                          : Colors.black),
                                 );
                               } else {
                                 return Text(
@@ -284,7 +423,10 @@ class _MyProfileState extends State<MyProfile> {
                                           MediaQuery.of(context).size.width /
                                               20,
                                       fontWeight: FontWeight.w500,
-                                      color: Colors.yellow),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.yellow
+                                          : Colors.black),
                                 );
                               }
                           }
@@ -300,7 +442,9 @@ class _MyProfileState extends State<MyProfile> {
                       style: GoogleFonts.poppins(
                           fontSize: MediaQuery.of(context).size.width / 20,
                           fontWeight: FontWeight.w500,
-                          color: Colors.yellow),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.yellow
+                              : Colors.black),
                     ),
                     Container(width: MediaQuery.of(context).size.width / 4),
                     StreamBuilder(
@@ -313,24 +457,37 @@ class _MyProfileState extends State<MyProfile> {
                                 style: GoogleFonts.poppins(
                                   fontSize:
                                       MediaQuery.of(context).size.width / 20,
-                                  color: Colors.yellow,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.yellow
+                                      : Colors.black,
                                   fontWeight: FontWeight.bold,
                                 ),
                               );
                             default:
-                              var user = FirebaseAuth.instance.currentUser;
-                              final userRef = FirebaseFirestore.instance
-                                  .collection('users');
-                              userRef.get().then((snapshot) {
-                                for (var doc in snapshot.docs) {
-                                  if (doc.data()['email'] == user?.email) {
-                                    username = doc.data()['username'];
-                                    usia = doc.data()['usia'];
-                                    no_telp = doc.data()['phonenumber'];
-                                    email = doc.data()['email'];
-                                  }
+                              for (var doc in snapshot.data!.docs) {
+                                if (doc['email'] ==
+                                    FirebaseAuth.instance.currentUser?.email) {
+                                  username = doc['username'];
+                                  usia = doc['usia'];
+                                  no_telp = doc['phonenumber'];
+                                  email = doc['email'];
+                                  if (doc['image'] != '') profil = doc['image'];
                                 }
-                              });
+                              }
+                              // var user = FirebaseAuth.instance.currentUser;
+                              // final userRef = FirebaseFirestore.instance
+                              //     .collection('users');
+                              // userRef.get().then((snapshot) {
+                              //   for (var doc in snapshot.docs) {
+                              //     if (doc.data()['email'] == user?.email) {
+                              //       username = doc.data()['username'];
+                              //       usia = doc.data()['usia'];
+                              //       no_telp = doc.data()['phonenumber'];
+                              //       email = doc.data()['email'];
+                              //     }
+                              //   }
+                              // });
                               if (snapshot.hasError) {
                                 return AutoSizeText(
                                   'Error saat membaca data...',
@@ -339,7 +496,10 @@ class _MyProfileState extends State<MyProfile> {
                                           MediaQuery.of(context).size.width /
                                               20,
                                       fontWeight: FontWeight.w500,
-                                      color: Colors.yellow),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.yellow
+                                          : Colors.black),
                                 );
                               } else {
                                 return Text(
@@ -349,7 +509,10 @@ class _MyProfileState extends State<MyProfile> {
                                           MediaQuery.of(context).size.width /
                                               20,
                                       fontWeight: FontWeight.w500,
-                                      color: Colors.yellow),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.yellow
+                                          : Colors.black),
                                 );
                               }
                           }
@@ -365,7 +528,9 @@ class _MyProfileState extends State<MyProfile> {
                       style: GoogleFonts.poppins(
                           fontSize: MediaQuery.of(context).size.width / 20,
                           fontWeight: FontWeight.w500,
-                          color: Colors.yellow),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.yellow
+                              : Colors.black),
                     ),
                     Container(width: MediaQuery.of(context).size.width / 16),
                     StreamBuilder(
@@ -378,24 +543,37 @@ class _MyProfileState extends State<MyProfile> {
                                 style: GoogleFonts.poppins(
                                   fontSize:
                                       MediaQuery.of(context).size.width / 20,
-                                  color: Colors.yellow,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.yellow
+                                      : Colors.black,
                                   fontWeight: FontWeight.bold,
                                 ),
                               );
                             default:
-                              var user = FirebaseAuth.instance.currentUser;
-                              final userRef = FirebaseFirestore.instance
-                                  .collection('users');
-                              userRef.get().then((snapshot) {
-                                for (var doc in snapshot.docs) {
-                                  if (doc.data()['email'] == user?.email) {
-                                    username = doc.data()['username'];
-                                    usia = doc.data()['usia'];
-                                    no_telp = doc.data()['phonenumber'];
-                                    email = doc.data()['email'];
-                                  }
+                              for (var doc in snapshot.data!.docs) {
+                                if (doc['email'] ==
+                                    FirebaseAuth.instance.currentUser?.email) {
+                                  username = doc['username'];
+                                  usia = doc['usia'];
+                                  no_telp = doc['phonenumber'];
+                                  email = doc['email'];
+                                  if (doc['image'] != '') profil = doc['image'];
                                 }
-                              });
+                              }
+                              // var user = FirebaseAuth.instance.currentUser;
+                              // final userRef = FirebaseFirestore.instance
+                              //     .collection('users');
+                              // userRef.get().then((snapshot) {
+                              //   for (var doc in snapshot.docs) {
+                              //     if (doc.data()['email'] == user?.email) {
+                              //       username = doc.data()['username'];
+                              //       usia = doc.data()['usia'];
+                              //       no_telp = doc.data()['phonenumber'];
+                              //       email = doc.data()['email'];
+                              //     }
+                              //   }
+                              // });
                               if (snapshot.hasError) {
                                 return AutoSizeText(
                                   'Error saat membaca data...',
@@ -404,7 +582,10 @@ class _MyProfileState extends State<MyProfile> {
                                           MediaQuery.of(context).size.width /
                                               20,
                                       fontWeight: FontWeight.w500,
-                                      color: Colors.yellow),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.yellow
+                                          : Colors.black),
                                 );
                               } else {
                                 return Text(
@@ -413,7 +594,10 @@ class _MyProfileState extends State<MyProfile> {
                                     fontSize:
                                         MediaQuery.of(context).size.width / 20,
                                     fontWeight: FontWeight.w500,
-                                    color: Colors.yellow,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.yellow
+                                        : Colors.black,
                                   ),
                                 );
                               }
@@ -435,8 +619,13 @@ class _MyProfileState extends State<MyProfile> {
                       );
                     })),
                     text: 'Edit',
-                    backgroundColor: Colors.yellow,
-                    textColor: const Color(0xFF374259),
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF374259)
+                            : Colors.black,
+                    textColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.yellow
+                        : Colors.white,
                   ),
                 ),
                 const SizedBox(width: 30),
@@ -446,30 +635,46 @@ class _MyProfileState extends State<MyProfile> {
                     onTap: () async {
                       while (true) {
                         try {
-                          await FirebaseAuth.instance.signOut();
-                          break;
+                          if (FirebaseAuth.instance.currentUser != null) {
+                            await FirebaseAuth.instance.signOut();
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => Screen()),
+                                (Route<dynamic> route) => false);
+                            break;
+                          }
                         } catch (e) {
                           print('error');
                         }
                       }
                     },
                     text: 'Log out',
-                    backgroundColor: Colors.yellow,
-                    textColor: const Color(0xFF374259),
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF374259)
+                            : Colors.black,
+                    textColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.yellow
+                        : Colors.white,
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(15),
                   child: MyButton(
-                    onTap: () {
-                      Navigator.of(context).pushReplacement(
-                          CupertinoPageRoute(builder: (BuildContext context) {
-                        return const MySigninPage();
-                      }));
+                    onTap: () async {
+                      await FirebaseAuth.instance.currentUser!.delete();
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => Screen()),
+                          (Route<dynamic> route) => false);
                     },
                     text: 'Delete Account',
-                    backgroundColor: Colors.yellow,
-                    textColor: const Color(0xFF374259),
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF374259)
+                            : Colors.black,
+                    textColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.yellow
+                        : Colors.white,
                   ),
                 ),
               ],

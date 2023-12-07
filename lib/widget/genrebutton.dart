@@ -42,7 +42,6 @@ class _MyGenreButtonState extends State<MyGenreButton> {
               width: 70.0,
               height: 70.0,
               decoration: BoxDecoration(
-                color: Colors.amber,
                 shape: BoxShape.circle,
                 image: DecorationImage(
                     image: AssetImage(widget.imagePath.toString()),
@@ -54,7 +53,7 @@ class _MyGenreButtonState extends State<MyGenreButton> {
               widget.title.toString(),
               style: GoogleFonts.poppins(
                 fontSize: 19,
-                color:const  Color(0xFF374259),
+                color: const Color(0xFF374259),
                 fontWeight: FontWeight.w600,
               ),
             ),

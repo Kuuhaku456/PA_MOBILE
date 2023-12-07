@@ -44,7 +44,7 @@ Future<void> addProfile(String x, String y) async {
     "phonenumber": "-",
     "usia": "-",
     "image": "",
-    "animeFavorites": [],
+    "favorit": []
   };
 
   await db

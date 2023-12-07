@@ -39,8 +39,6 @@ dependencies:
   jikan_api: ^2.1.0
   provider:
   smooth_page_indicator:
-  dio:
-  get_it:
   json_annotation: ^4.8.1
   cached_network_image: ^3.3.0
   auto_size_text: 
@@ -52,6 +50,7 @@ dependencies:
   firebase_auth: ^4.15.0
   cloud_firestore: 
   firebase_storage:
+  babstrap_settings_screen : ^0.1.6
 
 
 dev_dependencies:
@@ -77,7 +76,6 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/
-    - assets/icon/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
   # For details regarding adding assets from package dependencies, see

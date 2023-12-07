@@ -1,120 +1,42 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:posttest5_096_filipus_manik/main.dart';
 import 'package:posttest5_096_filipus_manik/models/anime_card.dart';
 import 'package:posttest5_096_filipus_manik/models/top_anime.dart';
-import 'package:posttest5_096_filipus_manik/provider/Top_Anime_notifier.dart';
-import 'package:posttest5_096_filipus_manik/provider/anime_favorite_notifier.dart';
-import 'package:posttest5_096_filipus_manik/repository/anime_repo.dart';
-import 'package:provider/provider.dart';
+import 'package:posttest5_096_filipus_manik/pages/detail_anime.dart';
 
-class TopsAnimes extends StatelessWidget {
+Stream<QuerySnapshot> whoAmI() {
+  // if(FirebaseAuth.instance.currentUser?.email != null){
+  //   return FirebaseFirestore.instance.collection('anime').where('id', isEqualTo: 1).snapshots();
+  // }
+  return FirebaseFirestore.instance
+      .collection("anime")
+      .orderBy("score", descending: true)
+      .snapshots();
+}
+
+class TopsAnimes extends StatefulWidget {
   const TopsAnimes({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) =>
-          TopAnimeNotifier(repositories: getIt.get<AnimeRepository>()),
-      child: const TopsAnimeView(),
-    );
-  }
+  State<TopsAnimes> createState() => _TopsAnimesState();
 }
 
-class TopsAnimeView extends StatefulWidget {
-  const TopsAnimeView({super.key});
-
-  @override
-  State<TopsAnimeView> createState() => _TopsAnimeViewState();
-}
-
-class _TopsAnimeViewState extends State<TopsAnimeView> {
+class _TopsAnimesState extends State<TopsAnimes> {
   bool isTapped = false;
-  void toggleFavorite(Anime data) {
-    if (data.isFavorite) {
-      setState(() {
-        data.isFavorite = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: const Color(0xFF374259),
-          content: Text(
-            'Anime telah di-unfavorit',
-            style: GoogleFonts.poppins(color: Colors.yellow, fontSize: 15),
-          ),
-        ),
-      );
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Tambahkan ke Favorit?'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    data.isFavorite = true;
-                  });
-                  Provider.of<AnimeFavoriteNotifier>(context, listen: false)
-                      .addToFavorite(data);
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      backgroundColor: const Color(0xFF374259),
-                      content: Row(
-                        children: [
-                          Text(
-                            'Anime telah di tambahkan ke favorit',
-                            style: GoogleFonts.poppins(
-                                color: Colors.yellow, fontSize: 15),
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                toggleFavorite(data);
-                              },
-                              child: Text(
-                                'Urungkan',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 15, color: Colors.blue),
-                              )),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                child: Text('Tambahkan'),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-
-  void handleTap() {
-    setState(() {
-      isTapped = !isTapped; // Toggle nilai ketika tombol ditekan.
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    //context.read<TopAnimeNotifier>().getAnimeTop();
-    Provider.of<TopAnimeNotifier>(context, listen: false).getAnimeTop();
+    isTapped = !isTapped;
   }
 
   @override
   Widget build(BuildContext context) {
     var lebar = MediaQuery.of(context).size.width;
     var tinggi = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -133,44 +55,86 @@ class _TopsAnimeViewState extends State<TopsAnimeView> {
         decoration: const BoxDecoration(
           color: Color(0xFF374259),
         ),
-        child: SizedBox(
-          width: lebar,
-          height: tinggi,
-          child: SizedBox(
-            width: lebar,
-            height: 900,
-            child:
-                Consumer<TopAnimeNotifier>(builder: (context, provider, child) {
-              if (provider.state == ProviderState.loaded) {
-                return ListView.builder(
-                    itemCount: provider.getAnime.length,
-                    itemBuilder: (context, index) {
+        child: StreamBuilder(
+            stream: whoAmI(),
+            builder: (context, snapshots) {
+              switch (snapshots.connectionState) {
+                case ConnectionState.waiting:
+                  return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                default:
+                  List<Widget> createChildren() {
+                    return List<Widget>.generate(snapshots.data!.docs.length,
+                        (int index) {
+                      bool ok = false;
                       return MyanimeCard(
-                        onTap: () {},
-                        index: index,
-                        title: provider.getAnime[index].judul,
-                        imagePath: provider.getAnime[index].imagePath,
-                        rating: provider.getAnime[index].Rating,
-                        episode: provider.getAnime[index].Episode,
-                        isFavorite: provider.getAnime[index].isFavorite,
-                        handleTap: () {
-                          toggleFavorite(provider.getAnime[index]);
-                          // setState(() {
-                          //   ListTopAnime[index].isFavorite = !ListTopAnime[index].isFavorite;
-                          // });
-                        },
+                        onTap: () => Navigator.of(context).push(
+                            CupertinoPageRoute(builder: (BuildContext context) {
+                          return MyAnimeDetails(
+                              id: 0,
+                              sx: Anime(
+                                  id: '1',
+                                  judul: snapshots.data!.docs[index]['title'],
+                                  Rating: snapshots.data!.docs[index]['score']
+                                      .toString(),
+                                  Episode: snapshots
+                                      .data!.docs[index]['episodes']
+                                      .toString(),
+                                  sypnosis: snapshots.data!.docs[index]
+                                      ['synopsis'],
+                                  imagePath: snapshots.data!.docs[index]
+                                      ['image'],
+                                  genre: snapshots.data!.docs[index]
+                                      ['genres']));
+                        })),
+                        indexs: index + 1,
+                        id: snapshots.data!.docs[index]['mal_id'].toString(),
+                        title: snapshots.data!.docs[index]['title'],
+                        imagePath: snapshots.data!.docs[index]['image'],
+                        rating: snapshots.data!.docs[index]['score'].toString(),
+                        episode:
+                            snapshots.data!.docs[index]['episodes'].toString(),
+                        isFavorite: ok,
                       );
                     });
-              } else if (provider.state == ProviderState.loading) {
-                return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshots.hasError) {
+                    return Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height / 3,
+                        margin: EdgeInsets.only(
+                            left: MediaQuery.of(context).size.width / 20,
+                            right: MediaQuery.of(context).size.width / 20),
+                        decoration: BoxDecoration(
+                          color: Colors.yellow,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Anime ada error!',
+                            style: GoogleFonts.poppins(
+                              fontSize: MediaQuery.of(context).size.width / 20,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF374259),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  } else {
+                    var ok = createChildren();
+                    return ListView.builder(
+                        itemCount: ok.length,
+                        itemBuilder: (context, int index) {
+                          return ok[index];
+                        });
+                  }
               }
-              return Text(
-                'Kosong',
-              );
             }),
-          ),
-        ),
       ),
     );
   }
 }
+

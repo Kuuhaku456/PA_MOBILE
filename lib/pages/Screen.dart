@@ -16,25 +16,25 @@ class Screen extends StatefulWidget {
 }
 
 class _ScreenState extends State<Screen> {
-  int indexs = 0;
+  int a = 0;
 
   final List<Widget> page = [
     const HomePage(),
-    const JadwalTayang(),
+    // const JadwalTayang(),
     const TopsAnimes(),
     const MyProfile(),
   ];
 
-  void itemTapped(int index) {
+  void itemTapped(int b) {
     setState(() {
-      indexs = index;
+      a = b;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    indexs = 0;
+    a = 0;
   }
 
   @override
@@ -42,7 +42,7 @@ class _ScreenState extends State<Screen> {
     return Scaffold(
       backgroundColor: Color(0xFF374259),
       body: Center(
-        child: page.elementAt(indexs),
+        child: page.elementAt(a),
       ),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: const Color(0xFF374259),
@@ -50,11 +50,6 @@ class _ScreenState extends State<Screen> {
         items: const [
           Icon(
             Icons.home,
-            size: 20,
-            color: Colors.yellow,
-          ),
-          Icon(
-            Icons.calendar_month_outlined,
             size: 20,
             color: Colors.yellow,
           ),
@@ -69,8 +64,8 @@ class _ScreenState extends State<Screen> {
             color: Colors.yellow,
           ),
         ],
-        onTap: (index) {
-          if (index == 3) {
+        onTap: (b) {
+          if (b == 2) {
             FirebaseAuth.instance.authStateChanges().listen((User? user) {
               if (user == null) {
                 Navigator.of(context).pushReplacement(
@@ -78,11 +73,11 @@ class _ScreenState extends State<Screen> {
                   return const MySigninPage();
                 }));
               } else {
-                itemTapped(index);
+                itemTapped(b);
               }
             });
           } else {
-            itemTapped(index);
+            itemTapped(b);
           }
         },
       ),

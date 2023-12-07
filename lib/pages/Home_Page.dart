@@ -1,3 +1,8 @@
+import 'dart:math';
+
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:posttest5_096_filipus_manik/models/anime.dart';
+import 'package:posttest5_096_filipus_manik/models/anime_card.dart';
+import 'package:posttest5_096_filipus_manik/models/top_anime.dart';
 import 'package:posttest5_096_filipus_manik/pages/Favorites.dart';
 import 'package:posttest5_096_filipus_manik/pages/detail_anime.dart';
 import 'package:posttest5_096_filipus_manik/pages/genre_page.dart';
@@ -12,7 +19,18 @@ import 'package:posttest5_096_filipus_manik/pages/signinpage.dart';
 import 'package:posttest5_096_filipus_manik/widget/anime_cards.dart';
 import 'package:posttest5_096_filipus_manik/widget/genrebutton.dart';
 import 'package:posttest5_096_filipus_manik/widget/gridview_card.dart';
+import 'package:posttest5_096_filipus_manik/widget/seasons_button.dart';
 import 'package:posttest5_096_filipus_manik/widget/slide_item.dart';
+
+String pl = 'https://avatars.githubusercontent.com/Kuuhaku456';
+
+Stream<QuerySnapshot> whoAmI() {
+  return FirebaseFirestore.instance.collection('users').snapshots();
+}
+
+Stream<QuerySnapshot> whoAmIs() {
+  return FirebaseFirestore.instance.collection('anime').snapshots();
+}
 
 class HomePage extends StatefulWidget {
   final id;
@@ -29,21 +47,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int id = 0;
+  var rng = Random();
   void onTapped(int passid) {
     id = passid;
   }
 
   int _currentIndex = 0;
+
   final List<Widget> _slides = [
     MySlideItem(
-        onTap: () async {
-          //percobaan download
-          // final storageRef = FirebaseStorage.instance.ref();
-          // final imageUrl = await FirebaseStorage.instance
-          //     .refFromURL("gs://aexinl.appspot.com/pip.py")
-          //     .getDownloadURL();
-          // print(imageUrl);
-        },
+        onTap: () async {},
         rating: 8.45,
         title: 'One Piece',
         imagePath: 'assets/one_piece.jpg'),
@@ -58,19 +71,23 @@ class _HomePageState extends State<HomePage> {
         title: 'Gotoubun No Hanayome',
         imagePath: 'assets/gotoubun.jpg'),
   ];
-  List animeList = Animes.animeList;
+
   @override
   Widget build(BuildContext context) {
     var lebar = MediaQuery.of(context).size.width;
     var tinggi = MediaQuery.of(context).size.height;
+    final List<int> randoms = [];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF374259),
-        title: Text('CrunchRyoll',
-            style: GoogleFonts.poppins(
-                color: Colors.yellow,
-                fontSize: 20,
-                fontWeight: FontWeight.bold)),
+        title: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text('CrunchRyoll',
+              style: GoogleFonts.poppins(
+                  color: Colors.yellow,
+                  fontSize: lebar / 15,
+                  fontWeight: FontWeight.bold)),
+        ),
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {
@@ -84,43 +101,67 @@ class _HomePageState extends State<HomePage> {
               print(user?.email);
             });
           },
-          child: Container(
-            margin: const EdgeInsets.all(10),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              image: const DecorationImage(
-                image: NetworkImage(
-                    'https://avatars.githubusercontent.com/Kuuhaku456'),
-              ),
-              borderRadius: BorderRadius.circular(10),
-            ),
+          child: ListView(
+            children: [
+              StreamBuilder(
+                  stream: whoAmI(),
+                  builder: (context, snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        return Container(
+                          height: 150,
+                          width: 150,
+                          margin: const EdgeInsets.all(10),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: NetworkImage(pl),
+                              fit: BoxFit.scaleDown,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        );
+                      default:
+                        for (var doc in snapshot.data!.docs) {
+                          if (doc['email'] ==
+                              FirebaseAuth.instance.currentUser?.email) {
+                            if (doc['image'] != '') pl = doc['image'];
+                          }
+                        }
+                        if (snapshot.hasError) {
+                          return Container(
+                            height: 150,
+                            width: 150,
+                            margin: const EdgeInsets.all(10),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage(pl),
+                                fit: BoxFit.scaleDown,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          );
+                        } else {
+                          return Container(
+                            height: 150,
+                            width: 150,
+                            margin: const EdgeInsets.all(10),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage(pl),
+                                fit: BoxFit.scaleDown,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          );
+                        }
+                    }
+                  }),
+            ],
           ),
         ),
-        actions: [
-          CupertinoButton(
-            child: Icon(
-              Icons.favorite,
-              size: 30,
-              color: Colors.yellow,
-            ),
-            onPressed: () {
-              FirebaseAuth.instance.authStateChanges().listen((User? user) {
-                if (user != null) {
-                  Navigator.of(context).pushReplacement(
-                      CupertinoPageRoute(builder: (BuildContext context) {
-                    return const Favorites();
-                  }));
-                } else {
-                  Navigator.of(context).pushReplacement(
-                      CupertinoPageRoute(builder: (BuildContext context) {
-                    return const MySigninPage();
-                  }));
-                }
-              });
-            },
-            disabledColor: const Color(0xFF374259),
-          ),
-        ],
       ),
       body: Container(
         width: lebar,
@@ -157,76 +198,148 @@ class _HomePageState extends State<HomePage> {
                   autoPlayAnimationDuration: const Duration(milliseconds: 800),
                   autoPlayCurve: Curves.fastOutSlowIn,
                   enlargeCenterPage: true,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _currentIndex = index;
-                    });
-                  },
                 ),
               ),
-              search_field(),
               Text_genre(),
-              SizedBox(
-                width: lebar,
-                height: 150,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: SizedBox(
+                  width: lebar,
+                  height: 150,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      MyGenreButton(
+                          onTap: () => Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                      builder: (BuildContext context) {
+                                return const MyListPage(
+                                  title: "Action",
+                                );
+                              })),
+                          imagePath: 'assets/kny.png',
+                          title: 'ACTION'),
+                      MyGenreButton(
+                          onTap: () => Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                      builder: (BuildContext context) {
+                                return const MyListPage(
+                                  title: "Adventure",
+                                );
+                              })),
+                          imagePath: 'assets/one_piece.jpg',
+                          title: 'ADVENTURE'),
+                      MyGenreButton(
+                        onTap: () => Navigator.of(context).push(
+                            CupertinoPageRoute(builder: (BuildContext context) {
+                          return const MyListPage(
+                            title: 'Horror',
+                          );
+                        })),
+                        imagePath: 'assets/junji_ito.jpg',
+                        title: 'HORROR',
+                      ),
+                      MyGenreButton(
+                        onTap: () => Navigator.of(context).push(
+                            CupertinoPageRoute(builder: (BuildContext context) {
+                          return const MyListPage(
+                            title: 'Drama',
+                          );
+                        })),
+                        imagePath: 'assets/shigatsu.jpg',
+                        title: 'DRAMA',
+                      ),
+                      MyGenreButton(
+                        onTap: () => Navigator.of(context).push(
+                            CupertinoPageRoute(builder: (BuildContext context) {
+                          return const MyListPage(
+                            title: 'Fantasy',
+                          );
+                        })),
+                        imagePath: 'assets/mushoku_tensei.jpeg',
+                        title: 'Fantasy',
+                      ),
+                      MyGenreButton(
+                        onTap: () => Navigator.of(context).push(
+                            CupertinoPageRoute(builder: (BuildContext context) {
+                          return const MyListPage(
+                            title: 'Thriller',
+                          );
+                        })),
+                        imagePath: 'assets/cs.jpg',
+                        title: 'THRILLER',
+                      ),
+                      MyGenreButton(
+                        onTap: () => Navigator.of(context).push(
+                            CupertinoPageRoute(builder: (BuildContext context) {
+                          return const MyListPage(
+                            title: 'Harem',
+                          );
+                        })),
+                        imagePath: 'assets/gotoubun.jpg',
+                        title: 'HAREM',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Center(
+                  child: AutoSizeText(
+                    'SEASONS',
+                    style: GoogleFonts.poppins(
+                      fontSize: 25,
+                      color: Colors.yellow,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                height: 70,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    MyGenreButton(
-                        onTap: () => Navigator.of(context).push(
-                                CupertinoPageRoute(
-                                    builder: (BuildContext context) {
-                              return const MyGenrePage();
-                            })),
-                        imagePath: 'assets/kny.png',
-                        title: 'ACTION'),
-                    MyGenreButton(
-                        onTap: () => Navigator.of(context).push(
-                                CupertinoPageRoute(
-                                    builder: (BuildContext context) {
-                              return const MyGenrePage();
-                            })),
-                        imagePath: 'assets/one_piece.jpg',
-                        title: 'ADVENTURE'),
-                    MyGenreButton(
+                    MySeasonsButton(
+                      imagePath: 'assets/spring.png',
                       onTap: () => Navigator.of(context).push(
                           CupertinoPageRoute(builder: (BuildContext context) {
-                        return const MyGenrePage();
+                        return const MyListPage(
+                          title: 'Spring',
+                        );
                       })),
-                      imagePath: 'assets/junji_ito.jpg',
-                      title: 'HORROR',
                     ),
-                    MyGenreButton(
+                    Container(width: MediaQuery.of(context).size.width / 8),
+                    MySeasonsButton(
+                      imagePath: 'assets/summer.png',
                       onTap: () => Navigator.of(context).push(
                           CupertinoPageRoute(builder: (BuildContext context) {
-                        return const MyGenrePage();
+                        return const MyListPage(
+                          title: 'Summer',
+                        );
                       })),
-                      imagePath: 'assets/shigatsu.jpg',
-                      title: 'DRAMA',
                     ),
-                    MyGenreButton(
+                    Container(width: MediaQuery.of(context).size.width / 8),
+                    MySeasonsButton(
+                      imagePath: 'assets/autumn.png',
                       onTap: () => Navigator.of(context).push(
                           CupertinoPageRoute(builder: (BuildContext context) {
-                        return const MyGenrePage();
+                        return const MyListPage(
+                          title: 'Fall',
+                        );
                       })),
-                      imagePath: 'assets/mushoku_tensei.jpeg',
-                      title: 'MAGIC',
                     ),
-                    MyGenreButton(
+                    Container(width: MediaQuery.of(context).size.width / 8),
+                    MySeasonsButton(
+                      imagePath: 'assets/winter.png',
                       onTap: () => Navigator.of(context).push(
                           CupertinoPageRoute(builder: (BuildContext context) {
-                        return const MyGenrePage();
+                        return const MyListPage(
+                          title: 'Winter',
+                        );
                       })),
-                      imagePath: 'assets/cs.jpg',
-                      title: 'THRILLER',
-                    ),
-                    MyGenreButton(
-                      onTap: () => Navigator.of(context).push(
-                          CupertinoPageRoute(builder: (BuildContext context) {
-                        return const MyGenrePage();
-                      })),
-                      imagePath: 'assets/gotoubun.jpg',
-                      title: 'HAREM',
                     ),
                   ],
                 ),
@@ -235,56 +348,91 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 width: double.infinity,
                 height: 290,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    for (int index = 0; index < animeList.length; index++)
-                      MyAnimeCards(
-                        onTap: () => Navigator.of(context).pushReplacement(
-                            CupertinoPageRoute(builder: (BuildContext context) {
-                          return MyAnimeDetails(id: animeList[index].id);
-                        })),
-                        rating: animeList[index].rating,
-                        title: animeList[index].judul,
-                        imagePath: animeList[index].imagePath,
-                      )
-                  ],
-                ),
+                child: StreamBuilder(
+                    stream: whoAmIs(),
+                    builder: (context, snapshots) {
+                      switch (snapshots.connectionState) {
+                        case ConnectionState.waiting:
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        default:
+                          List<Widget> createChildren() {
+                            return List<Widget>.generate(10, (int indexc) {
+                              randoms.add(
+                                  rng.nextInt(snapshots.data!.docs.length));
+                              return MyAnimeCards(
+                                onTap: () => Navigator.of(context).push(
+                                    CupertinoPageRoute(
+                                        builder: (BuildContext context) {
+                                  return MyAnimeDetails(
+                                      id: 0,
+                                      sx: Anime(
+                                          id: '1',
+                                          judul: snapshots.data!
+                                              .docs[randoms[indexc]]['title'],
+                                          Rating: snapshots.data!
+                                              .docs[randoms[indexc]]['score']
+                                              .toString(),
+                                          Episode: snapshots.data!
+                                              .docs[randoms[indexc]]['episodes']
+                                              .toString(),
+                                          sypnosis:
+                                              snapshots.data!.docs[randoms[indexc]]
+                                                  ['synopsis'],
+                                          imagePath: snapshots.data!
+                                              .docs[randoms[indexc]]['image'],
+                                          genre: snapshots.data!.docs[randoms[indexc]]
+                                              ['genres']));
+                                })),
+                                rating: snapshots.data!.docs[randoms[indexc]]
+                                    ['score'],
+                                title: snapshots.data!.docs[randoms[indexc]]
+                                    ['title'],
+                                imagePath: snapshots.data!.docs[randoms[indexc]]
+                                    ['image'],
+                              );
+                            });
+                          }
+                          if (snapshots.hasError) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            var ok = createChildren();
+                            return ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: ok.length,
+                                itemBuilder: (context, int indexc) {
+                                  return ok[indexc];
+                                });
+                          }
+                      }
+                    }),
               ),
-              Center(
-                child: Text(
-                  'ALL ANIMES',
-                  style: GoogleFonts.poppins(
-                    fontSize: 30,
-                    color: Colors.yellow,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
-                child: GridView(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 15,
-                      crossAxisSpacing: 15,
-                      mainAxisExtent: 220),
-                  children: [
-                    for (int index = 0; index < animeList.length; index++)
-                      MyGridViewCard(
-                        judul: animeList[index].judul,
-                        onTap: () => Navigator.of(context).push(
-                            CupertinoPageRoute(builder: (BuildContext context) {
-                          return MyAnimeDetails(id: animeList[index].id);
-                        })),
-                        rating: animeList[index].rating,
-                        imagePath: animeList[index].imagePath,
-                      ),
-                  ],
-                ),
-              )
+              // Center(
+              //   child: Text(
+              //     'ALL ANIMES',
+              //     style: GoogleFonts.poppins(
+              //       fontSize: 30,
+              //       color: Colors.yellow,
+              //       fontWeight: FontWeight.w600,
+              //     ),
+              //   ),
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+              //   child: GridView(
+              //     physics: const NeverScrollableScrollPhysics(),
+              //     shrinkWrap: true,
+              //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              //         crossAxisCount: 2,
+              //         mainAxisSpacing: 15,
+              //         crossAxisSpacing: 15,
+              //         mainAxisExtent: 220),
+              //     children: [],
+              //   ),
+              // )
             ],
           ),
         ),
@@ -330,13 +478,15 @@ class _HomePageState extends State<HomePage> {
 
   Padding Text_genre() {
     return Padding(
-      padding: const EdgeInsets.only(left: 10),
-      child: Text('Genre',
-          style: GoogleFonts.poppins(
-            fontSize: 25,
-            color: Colors.yellow,
-            fontWeight: FontWeight.w600,
-          )),
+      padding: const EdgeInsets.only(top: 10),
+      child: Center(
+        child: Text('GENRE',
+            style: GoogleFonts.poppins(
+              fontSize: 25,
+              color: Colors.yellow,
+              fontWeight: FontWeight.w600,
+            )),
+      ),
     );
   }
 
@@ -344,7 +494,7 @@ class _HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: () {},
       child: Container(
-        margin: EdgeInsets.fromLTRB(20, 40, 20, 40),
+        margin: EdgeInsets.fromLTRB(20, 50, 20, 40),
         decoration: BoxDecoration(
           color: Colors.yellow,
           borderRadius: BorderRadius.circular(10),
