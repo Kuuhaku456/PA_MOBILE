@@ -1,8 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:posttest5_096_filipus_manik/models/anime.dart';
 import 'package:posttest5_096_filipus_manik/models/top_anime.dart';
+import 'package:posttest5_096_filipus_manik/pages/watch.dart';
 import 'package:posttest5_096_filipus_manik/widget/Button.dart';
 import 'package:posttest5_096_filipus_manik/widget/genre_card.dart';
 
@@ -23,13 +25,7 @@ class MyAnimeDetails extends StatefulWidget {
 class _MyAnimeDetailsState extends State<MyAnimeDetails> {
   List animeList = Animes.animeList;
   @override
-  Widget build(BuildContext context) {
-    // int indeks = 0;
-    // for(int i=0;i<animeList.length;i++){
-    //   if(animeList[i].id == widget.id){
-    //     indeks = i;
-    //   }
-    // }
+  Widget build(BuildContext context) {   
     return Scaffold(
       body: Stack(
         children: [
@@ -45,10 +41,10 @@ class _MyAnimeDetailsState extends State<MyAnimeDetails> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: MediaQuery.of(context).size.height * .8,
+              height: MediaQuery.of(context).size.height * .85,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
-                  color: Colors.yellow.withOpacity(0.8),
+                  color: Colors.yellow.withOpacity(0.5),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(40),
                     topRight: Radius.circular(40),
@@ -63,16 +59,15 @@ class _MyAnimeDetailsState extends State<MyAnimeDetails> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   Padding(
-                    padding: const EdgeInsets.only(top: 10, left: 5),
+                    padding: const EdgeInsets.only( left: 5),
                     child: Container(
-                      margin: const EdgeInsets.all(5),
                       child: Center(
                         child: AutoSizeText(
                           widget.sx.judul,
                           style: GoogleFonts.poppins(
-                            fontSize: 27,
+                            fontSize: 25,
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFF374259),
                           ),
@@ -84,7 +79,7 @@ class _MyAnimeDetailsState extends State<MyAnimeDetails> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 5),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -138,20 +133,20 @@ class _MyAnimeDetailsState extends State<MyAnimeDetails> {
                       ],
                     ),
                   ),
-                  Container(height: MediaQuery.of(context).size.height / 90),
+                  Container(height: MediaQuery.of(context).size.height / 120),
                   Padding(
                     padding: const EdgeInsets.only(left: 10.0),
                     child: Text(
                       'Genres',
                       style: GoogleFonts.poppins(
-                        fontSize: 25,
+                        fontSize: 27,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF374259),
                       ),
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  Container(height: MediaQuery.of(context).size.height / 40),
+                  Container(height: MediaQuery.of(context).size.height / 80),
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -166,7 +161,7 @@ class _MyAnimeDetailsState extends State<MyAnimeDetails> {
                           );
                         }),
                   ),
-                  Container(height: MediaQuery.of(context).size.height / 40),
+                  Container(height: MediaQuery.of(context).size.height / 80),
                   Center(
                     child: AutoSizeText(
                       'Description',
@@ -181,7 +176,7 @@ class _MyAnimeDetailsState extends State<MyAnimeDetails> {
                     width: double.infinity,
                     height: MediaQuery.of(context).size.height / 3,
                     padding: const EdgeInsets.all(10),
-                    margin: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
                     decoration: BoxDecoration(
                       color: const Color(0xFF374259),
                       borderRadius: BorderRadius.circular(10),
@@ -205,7 +200,12 @@ class _MyAnimeDetailsState extends State<MyAnimeDetails> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: MyButton(
-                        onTap: () {},
+                        onTap:() => Navigator.of(context).push(
+                            CupertinoPageRoute(builder: (BuildContext context) {
+                          return MyWatchScreen(
+                            title: widget.sx.judul,
+                          );
+                        })),
                         text: 'Watch',
                         backgroundColor: const Color(0xFF374259),
                         textColor: Colors.yellow),

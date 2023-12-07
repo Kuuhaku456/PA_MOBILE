@@ -32,6 +32,10 @@ Stream<QuerySnapshot> whoAmIs() {
   return FirebaseFirestore.instance.collection('anime').snapshots();
 }
 
+Stream<QuerySnapshot> whoAmIss() {
+  return FirebaseFirestore.instance.collection('Now').snapshots();
+}
+
 class HomePage extends StatefulWidget {
   final id;
   final Animes? anime;
@@ -54,23 +58,7 @@ class _HomePageState extends State<HomePage> {
 
   int _currentIndex = 0;
 
-  final List<Widget> _slides = [
-    MySlideItem(
-        onTap: () async {},
-        rating: 8.45,
-        title: 'One Piece',
-        imagePath: 'assets/one_piece.jpg'),
-    MySlideItem(
-        onTap: () {},
-        rating: 8.88,
-        title: 'Mushoku Tensei',
-        imagePath: 'assets/mushoku_tensei.jpeg'),
-    MySlideItem(
-        onTap: () {},
-        rating: 8.88,
-        title: 'Gotoubun No Hanayome',
-        imagePath: 'assets/gotoubun.jpg'),
-  ];
+  List<Widget> _slides = [];
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +150,31 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
+        actions: [
+          CupertinoButton(
+            child: Icon(
+              Icons.favorite,
+              size: 30,
+              color: Colors.yellow,
+            ),
+            onPressed: () {
+              FirebaseAuth.instance.authStateChanges().listen((User? user) {
+                if (user != null) {
+                  Navigator.of(context)
+                      .push(CupertinoPageRoute(builder: (BuildContext context) {
+                    return const Favorites();
+                  }));
+                } else {
+                  Navigator.of(context).pushReplacement(
+                      CupertinoPageRoute(builder: (BuildContext context) {
+                    return const MySigninPage();
+                  }));
+                }
+              });
+            },
+            disabledColor: const Color(0xFF374259),
+          ),
+        ],
       ),
       body: Container(
         width: lebar,
@@ -186,20 +199,78 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              CarouselSlider(
-                items: _slides,
-                options: CarouselOptions(
-                  height: 200,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  reverse: false,
-                  autoPlay: true,
-                  autoPlayInterval: const Duration(seconds: 5),
-                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enlargeCenterPage: true,
-                ),
-              ),
+
+              StreamBuilder(
+                  stream: whoAmIss(),
+                  builder: (context, snapshot) {
+                    var okn;
+                    if (snapshot.connectionState == ConnectionState.waiting ||
+                        snapshot.hasError ||
+                        !snapshot.hasData) {
+                      return CarouselSlider(
+                        items: _slides,
+                        options: CarouselOptions(
+                          height: 200,
+                          initialPage: 0,
+                          enableInfiniteScroll: true,
+                          reverse: false,
+                          autoPlay: true,
+                          autoPlayInterval: const Duration(seconds: 5),
+                          autoPlayAnimationDuration:
+                              const Duration(milliseconds: 800),
+                          autoPlayCurve: Curves.fastOutSlowIn,
+                          enlargeCenterPage: true,
+                        ),
+                      );
+                    } else {
+                      okn = List<Widget>.generate(snapshot.data!.docs.length,
+                          (int indexcx) {
+                        // randoms.add(rng.nextInt(snapshot.data!.docs.length));
+                        return MySlideItem(
+                            onTap: () {
+                              Navigator.of(context).push(CupertinoPageRoute(
+                                  builder: (BuildContext context) {
+                                return MyAnimeDetails(
+                                    id: 1,
+                                    sx: Anime(
+                                        id: '1',
+                                        judul: snapshot.data!.docs[indexcx]
+                                            ['title'],
+                                        Rating: snapshot
+                                            .data!.docs[indexcx]['score']
+                                            .toString(),
+                                        Episode: snapshot
+                                            .data!.docs[indexcx]['episodes']
+                                            .toString(),
+                                        sypnosis: snapshot.data!.docs[indexcx]
+                                            ['synopsis'],
+                                        imagePath: snapshot.data!.docs[indexcx]
+                                            ['image'],
+                                        genre: snapshot.data!.docs[indexcx]
+                                            ['genres']));
+                              }));
+                            },
+                            rating: snapshot.data!.docs[indexcx]['score'],
+                            title: snapshot.data!.docs[indexcx]['title'],
+                            imagePath: snapshot.data!.docs[indexcx]['image']);
+                      });
+                    }
+                    return CarouselSlider(
+                      items: okn,
+                      options: CarouselOptions(
+                        height: 200,
+                        initialPage: 0,
+                        enableInfiniteScroll: true,
+                        reverse: false,
+                        autoPlay: true,
+                        autoPlayInterval: const Duration(seconds: 5),
+                        autoPlayAnimationDuration:
+                            const Duration(milliseconds: 800),
+                        autoPlayCurve: Curves.fastOutSlowIn,
+                        enlargeCenterPage: true,
+                      ),
+                    );
+                  }),
               Text_genre(),
               Padding(
                 padding: const EdgeInsets.only(top: 10),

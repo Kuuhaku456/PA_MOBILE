@@ -2,15 +2,12 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:posttest5_096_filipus_manik/pages/Screen.dart';
 import 'package:posttest5_096_filipus_manik/pages/profile.dart';
 import 'package:posttest5_096_filipus_manik/widget/Button.dart';
-import 'package:posttest5_096_filipus_manik/widget/emailTextfield.dart';
-import 'package:posttest5_096_filipus_manik/widget/passwordtextfield.dart';
 import 'package:posttest5_096_filipus_manik/widget/textfield.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
@@ -197,7 +194,6 @@ class _MyEditProfileState extends State<MyEditProfile> {
                             showAlert('Format Email Salah');
                           } else {
                             String ok = await _uploadImage();
-                            var user = FirebaseAuth.instance.currentUser;
                             final docRef = FirebaseFirestore.instance
                                 .collection("users")
                                 .doc(email);
