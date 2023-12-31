@@ -9,15 +9,12 @@ import 'package:posttest5_096_filipus_manik/provider/anime_favorite_notifier.dar
 import 'package:posttest5_096_filipus_manik/provider/theme_mode_data.dart';
 import 'package:provider/provider.dart';
 
-// var ope;
-// akuns oks = akuns();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   runApp(
     MultiProvider(
       providers: [

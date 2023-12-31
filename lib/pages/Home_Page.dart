@@ -1,24 +1,19 @@
 import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:posttest5_096_filipus_manik/models/anime.dart';
-import 'package:posttest5_096_filipus_manik/models/anime_card.dart';
 import 'package:posttest5_096_filipus_manik/models/top_anime.dart';
-import 'package:posttest5_096_filipus_manik/pages/Favorites.dart';
 import 'package:posttest5_096_filipus_manik/pages/detail_anime.dart';
 import 'package:posttest5_096_filipus_manik/pages/genre_page.dart';
 import 'package:posttest5_096_filipus_manik/pages/signinpage.dart';
 import 'package:posttest5_096_filipus_manik/widget/anime_cards.dart';
 import 'package:posttest5_096_filipus_manik/widget/genrebutton.dart';
-import 'package:posttest5_096_filipus_manik/widget/gridview_card.dart';
 import 'package:posttest5_096_filipus_manik/widget/seasons_button.dart';
 import 'package:posttest5_096_filipus_manik/widget/slide_item.dart';
 
@@ -98,7 +93,6 @@ class _HomePageState extends State<HomePage> {
                   return const MySigninPage();
                 }));
               }
-              print(user?.email);
             });
           },
           child: ListView(
@@ -296,7 +290,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              Container(
+              SizedBox(
                 width: double.infinity,
                 height: 70,
                 child: Row(

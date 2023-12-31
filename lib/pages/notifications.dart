@@ -10,20 +10,20 @@ class MyNotification extends StatefulWidget {
 class _MyNotificationState extends State<MyNotification> {
   @override
   Widget build(BuildContext context) {
-    var Lebar = MediaQuery.of(context).size.width;
-    var Tinggi = MediaQuery.of(context).size.height;
+    var lebar = MediaQuery.of(context).size.width;
+    var tinggi= MediaQuery.of(context).size.height;
     return  Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF374259),
+        backgroundColor:const Color(0xFF374259),
         title: const Text(
           'MyNotification'
           ),
           centerTitle: true,
       ),
       body: Container(
-        width: Lebar,
-        height: Tinggi,
-        decoration: BoxDecoration(
+        width: lebar,
+        height:tinggi,
+        decoration: const BoxDecoration(
           color: Color(0xFF374259),
         ),
       ),

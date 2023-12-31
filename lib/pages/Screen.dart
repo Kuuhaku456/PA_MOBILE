@@ -40,7 +40,7 @@ class _ScreenState extends State<Screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF374259),
+      backgroundColor: const Color(0xFF374259),
       body: Center(
         child: page.elementAt(a),
       ),

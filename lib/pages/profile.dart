@@ -86,12 +86,6 @@ class _MyProfileState extends State<MyProfile> {
                           ),
                         );
                       default:
-                        // var user = FirebaseAuth.instance.currentUser;
-
-                        // if (user != null) {
-                        // final userRef =
-                        // FirebaseFirestore.instance.collection('users');
-                        // userRef.get().then((snapshot) {
                         for (var doc in snapshot.data!.docs) {
                           if (doc['email'] ==
                               FirebaseAuth.instance.currentUser?.email) {
@@ -389,19 +383,6 @@ class _MyProfileState extends State<MyProfile> {
                                   if (doc['image'] != '') profil = doc['image'];
                                 }
                               }
-                              // var user = FirebaseAuth.instance.currentUser;
-                              // final userRef = FirebaseFirestore.instance
-                              //     .collection('users');
-                              // userRef.get().then((snapshot) {
-                              //   for (var doc in snapshot.docs) {
-                              //     if (doc.data()['email'] == user?.email) {
-                              //       username = doc.data()['username'];
-                              //       usia = doc.data()['usia'];
-                              //       no_telp = doc.data()['phonenumber'];
-                              //       email = doc.data()['email'];
-                              //     }
-                              //   }
-                              // });
                               if (snapshot.hasError) {
                                 return AutoSizeText(
                                   'Error saat membaca data...',
@@ -475,19 +456,6 @@ class _MyProfileState extends State<MyProfile> {
                                   if (doc['image'] != '') profil = doc['image'];
                                 }
                               }
-                              // var user = FirebaseAuth.instance.currentUser;
-                              // final userRef = FirebaseFirestore.instance
-                              //     .collection('users');
-                              // userRef.get().then((snapshot) {
-                              //   for (var doc in snapshot.docs) {
-                              //     if (doc.data()['email'] == user?.email) {
-                              //       username = doc.data()['username'];
-                              //       usia = doc.data()['usia'];
-                              //       no_telp = doc.data()['phonenumber'];
-                              //       email = doc.data()['email'];
-                              //     }
-                              //   }
-                              // });
                               if (snapshot.hasError) {
                                 return AutoSizeText(
                                   'Error saat membaca data...',
@@ -561,19 +529,6 @@ class _MyProfileState extends State<MyProfile> {
                                   if (doc['image'] != '') profil = doc['image'];
                                 }
                               }
-                              // var user = FirebaseAuth.instance.currentUser;
-                              // final userRef = FirebaseFirestore.instance
-                              //     .collection('users');
-                              // userRef.get().then((snapshot) {
-                              //   for (var doc in snapshot.docs) {
-                              //     if (doc.data()['email'] == user?.email) {
-                              //       username = doc.data()['username'];
-                              //       usia = doc.data()['usia'];
-                              //       no_telp = doc.data()['phonenumber'];
-                              //       email = doc.data()['email'];
-                              //     }
-                              //   }
-                              // });
                               if (snapshot.hasError) {
                                 return AutoSizeText(
                                   'Error saat membaca data...',
@@ -639,12 +594,12 @@ class _MyProfileState extends State<MyProfile> {
                             await FirebaseAuth.instance.signOut();
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => Screen()),
+                                    builder: (context) => const Screen()),
                                 (Route<dynamic> route) => false);
                             break;
                           }
                         } catch (e) {
-                          print('error');
+                          print('error:  ' + e.toString());
                         }
                       }
                     },
@@ -664,7 +619,7 @@ class _MyProfileState extends State<MyProfile> {
                     onTap: () async {
                       await FirebaseAuth.instance.currentUser!.delete();
                       Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) => Screen()),
+                          MaterialPageRoute(builder: (context) => const Screen()),
                           (Route<dynamic> route) => false);
                     },
                     text: 'Delete Account',

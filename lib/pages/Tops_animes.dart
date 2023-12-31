@@ -60,9 +60,9 @@ class _TopsAnimesState extends State<TopsAnimes> {
             builder: (context, snapshots) {
               switch (snapshots.connectionState) {
                 case ConnectionState.waiting:
-                  return Center(
-                                child: CircularProgressIndicator(),
-                              );
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 default:
                   List<Widget> createChildren() {
                     return List<Widget>.generate(snapshots.data!.docs.length,
@@ -137,4 +137,3 @@ class _TopsAnimesState extends State<TopsAnimes> {
     );
   }
 }
-

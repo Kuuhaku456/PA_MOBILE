@@ -10,16 +10,13 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class IntroductionPage extends StatefulWidget {
   const IntroductionPage({super.key});
-
   @override
   State<IntroductionPage> createState() => _IntroductionPageState();
 }
 
 class _IntroductionPageState extends State<IntroductionPage> {
   final PageController _controller = PageController();
-
   bool onLastPage = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +35,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
           ],
         ),
         Container(
-            alignment: Alignment(0, 0.75),
+            alignment: const Alignment(0, 0.75),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -83,7 +80,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
                 ) : GestureDetector(
                   onTap: (){
                     _controller.nextPage(
-                      duration: Duration(milliseconds: 500), 
+                      duration: const Duration(milliseconds: 500), 
                       curve: Curves.easeIn,
                     );
                   },
